@@ -348,8 +348,13 @@ public class MainActivity extends Activity {
                     return DocumentsContract.buildDocumentUriUsingTree(treeUri, c.getString(0));
             }
         }
-        return create ? DocumentsContract.createDocument(getContentResolver(), parent,
-                DocumentsContract.Document.MIME_TYPE_DIR, name) : null;
+        if (!create) return null;
+        try {
+            return DocumentsContract.createDocument(getContentResolver(), parent,
+                    DocumentsContract.Document.MIME_TYPE_DIR, name);
+        } catch (java.io.FileNotFoundException ex) {
+            throw new IllegalStateException("Android could not create the directory", ex);
+        }
     }
     private void locateAppRoot(boolean create) {
         if (treeUri == null) return;
